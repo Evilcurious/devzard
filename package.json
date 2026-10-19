@@ -19,7 +19,7 @@
     "tailwind-merge": "3.4.0"
   },
   "engines": {
-    "node": "20.x"
+    "node": "22.x"
   },
   "devDependencies": {
     "@tailwindcss/vite": "4.1.17",
