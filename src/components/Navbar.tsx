@@ -1,15 +1,20 @@
 import { useEffect, useState, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Menu, X, Zap, ArrowUpRight, ChevronDown, User, LogOut, LayoutDashboard, KeyRound, Sun, Moon } from "lucide-react";
+import { Menu, X, Zap, ArrowUpRight, ChevronDown, User, LogOut, LayoutDashboard, KeyRound, Sun, Moon, Crown } from "lucide-react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useStore } from "../context/StoreContext";
-import { ShieldCheck } from "lucide-react";
+import { useLanguage } from "../context/LanguageContext";
+import { ShieldCheck, Languages, Building2 } from "lucide-react";
 import { cn } from "../utils/cn";
 
 type NavItem = { label: string; href: string; children?: { label: string; href: string; desc: string }[] };
 
 const links: NavItem[] = [
+  {
+    label: "Staff Portal",
+    href: "/staff",
+  },
   {
     label: "Home",
     href: "/",
@@ -56,6 +61,7 @@ export default function Navbar() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { theme, siteMode, toggleSiteMode } = useStore();
+  const { lang, toggleLang } = useLanguage();
 
   const ThemeToggle = ({
     compact = false,
@@ -218,6 +224,7 @@ export default function Navbar() {
 
           {/* Desktop auth + CTA */}
           <div className="hidden items-center gap-3 lg:flex">
+            <button onClick={toggleLang} className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-3.5 py-2 text-xs font-bold text-zinc-700 hover:bg-zinc-50"><Languages className="h-3.5 w-3.5" /> {lang==="en" ? "EN / اردو" : "اردو / EN"}</button>
             <ThemeToggle />
             {user ? (
               <div className="relative" ref={userMenuRef}>
@@ -270,17 +277,25 @@ export default function Navbar() {
                           <LayoutDashboard className="h-4 w-4" /> Dashboard
                         </Link>
                         <Link
-                          to="/account"
-                          className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-brand-50 hover:text-brand-600"
+                          to="/staff"
+                          className="flex items-center gap-3 rounded-xl bg-zinc-900 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-black"
                         >
-                          <User className="h-4 w-4" /> Profile
+                          <Building2 className="h-4 w-4" /> Staff Portal
                         </Link>
-                        {(user.role === "admin" || user.email === "evilcurious6@gmail.com") && (
+                        {(user.role === "admin" || user.role === "creator" || user.email === "evilcurious6@gmail.com") && (
                           <Link
                             to="/admin"
                             className="flex items-center gap-3 rounded-xl bg-violet-50 px-4 py-2.5 text-sm font-semibold text-violet-700 transition-colors hover:bg-violet-100"
                           >
-                            <ShieldCheck className="h-4 w-4" /> Admin panel
+                            <ShieldCheck className="h-4 w-4" /> Site Admin
+                          </Link>
+                        )}
+                        {["creator","admin","it_ceo","bd_ceo","hr"].includes(user.role) && (
+                          <Link
+                            to="/staff/admin"
+                            className="flex items-center gap-3 rounded-xl bg-amber-50 px-4 py-2.5 text-sm font-semibold text-amber-800 transition-colors hover:bg-amber-100"
+                          >
+                            <Crown className="h-4 w-4" /> Staff Admin
                           </Link>
                         )}
                         <Link

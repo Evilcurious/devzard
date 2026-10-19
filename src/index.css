@@ -10,18 +10,19 @@
   --color-brand-300: #8ec7ff;
   --color-brand-400: #59a7ff;
   --color-brand-500: #3385ff;
-  --color-brand-600: #2563eb;
-  --color-brand-700: #1e4fd4;
-  --color-brand-800: #1f43ab;
-  --color-brand-900: #1e3c87;
-  --color-brand-950: #0a1633;
+  --color-brand-600: #0a0a0a;
+  --color-brand-700: #1a1a1a;
+  --color-brand-800: #171717;
+  --color-brand-900: #0f0f0f;
+  --color-brand-950: #050507;
 
-  --color-navy-800: #0e1f4a;
-  --color-navy-900: #0a1633;
-  --color-navy-950: #060d20;
+  --color-navy-800: #0a0a0a;
+  --color-navy-900: #050507;
+  --color-navy-950: #050507;
 
-  --color-sky-accent: #38bdf8;
-  --color-cyan-accent: #22d3ee;
+  --color-sky-accent: #ffffff;
+  --color-cyan-accent: #e5e5e5;
+  --color-zinc-accent: #111111;
 
   --animate-marquee: marquee 32s linear infinite;
   --animate-marquee-slow: marquee 55s linear infinite;
@@ -95,20 +96,20 @@ body {
   font-family: var(--font-display);
 }
 
-/* ---------- Dark mode (visitor-facing site) ---------- */
+/* ---------- Dark mode (blackish theme) ---------- */
 .dark body {
-  background-color: #05080f;
+  background-color: #050507;
 }
-.dark .bg-white { background-color: #0b1120; }
+.dark .bg-white { background-color: #0f0f0f; }
 .dark .bg-white\/80,
-.dark .bg-white\/90 { background-color: rgba(11, 17, 32, 0.85); }
-.dark .glass-card { background-color: rgba(11, 17, 32, 0.75); }
+.dark .bg-white\/90 { background-color: rgba(15, 15, 15, 0.85); }
+.dark .glass-card { background-color: rgba(15, 15, 15, 0.85); border-color: rgba(255,255,255,0.08); }
 .dark .bg-brand-50,
 .dark .bg-brand-50\/30,
 .dark .bg-brand-50\/40,
 .dark .bg-brand-50\/50,
 .dark .bg-brand-50\/60,
-.dark .bg-brand-50\/70 { background-color: rgba(37, 99, 235, 0.09); }
+.dark .bg-brand-50\/70 { background-color: rgba(255,255,255,0.06); }
 .dark .text-slate-900 { color: #f1f5f9; }
 .dark .text-slate-800 { color: #e2e8f0; }
 .dark .text-slate-700 { color: #cbd5e1; }
@@ -117,7 +118,7 @@ body {
 .dark .text-slate-400 { color: #7c8da8; }
 .dark .border-brand-50,
 .dark .border-brand-100,
-.dark .border-brand-200 { border-color: rgba(148, 163, 184, 0.16); }
+.dark .border-brand-200 { border-color: rgba(255,255,255,0.10); }
 .dark .bg-grid-light {
   background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1.5px, transparent 1.5px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1.5px, transparent 1.5px);
@@ -125,7 +126,9 @@ body {
 .dark .bg-dots {
   background-image: radial-gradient(rgba(255, 255, 255, 0.12) 1.5px, transparent 1.5px);
 }
-.dark .bg-slate-200 { background-color: #1e293b; }
+.dark .bg-slate-200 { background-color: #1a1a1a; }
+.dark .bg-zinc-50 { background-color: #111111; }
+.dark .border-zinc-200 { border-color: rgba(255,255,255,0.12); }
 
 /* opt-out: elements that must stay light in dark mode */
 .dark .keep-light.bg-white { background-color: #ffffff; }

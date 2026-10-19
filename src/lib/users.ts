@@ -2,7 +2,9 @@
 /* ============================== Types ============================== */
 
 export type UserPlan = "free" | "pro" | "business";
-export type UserRole = "user" | "admin";
+export type StaffRole = "creator" | "it_ceo" | "bd_ceo" | "hr" | "it_staff" | "bd_staff" | "staff" | "admin" | "user";
+export type Department = "IT" | "BD" | "HR" | "ALL" | "GENERAL";
+export type UserRole = StaffRole;
 
 export type PaymentMethod = {
   brand: string;
@@ -22,6 +24,9 @@ export type User = {
   lastLogin: string;
   plan: UserPlan;
   role: UserRole;
+  department?: Department;
+  staffId?: string;
+  jobTitle?: string;
   phone?: string;
   company?: string;
   country?: string;
@@ -80,7 +85,10 @@ function normalize(raw: any): User {
     createdAt: raw.createdAt ?? new Date().toISOString(),
     lastLogin: raw.lastLogin ?? new Date().toISOString(),
     plan: raw.plan ?? "free",
-    role: raw.role ?? "user",
+    role: (raw.role ?? "user") as UserRole,
+    department: raw.department ?? "ALL",
+    staffId: raw.staffId ?? "",
+    jobTitle: raw.jobTitle ?? "",
     phone: raw.phone ?? "",
     company: raw.company ?? "",
     country: raw.country ?? "",
@@ -102,6 +110,54 @@ export function loadUsers(): User[] {
 
 export function saveUsers(users: User[]) {
   localStorage.setItem(USERS_KEY, JSON.stringify(users));
+}
+
+/* ======== Staff roles helpers ======== */
+
+export const STAFF_ROLES: { value: StaffRole; label: string; desc: string }[] = [
+  { value: "creator", label: "Creator (Owner)", desc: "Full control — can make anyone CEO/HR" },
+  { value: "it_ceo", label: "IT CEO", desc: "Manages IT team + assigns IT work" },
+  { value: "bd_ceo", label: "BD CEO", desc: "Manages BD team + assigns BD work" },
+  { value: "hr", label: "HR Manager", desc: "Punishments, policy & leave approvals" },
+  { value: "it_staff", label: "IT Staff", desc: "IT team member" },
+  { value: "bd_staff", label: "BD Staff", desc: "BD team member" },
+  { value: "staff", label: "Staff", desc: "General staff (no team)" },
+  { value: "admin", label: "Admin", desc: "Legacy admin (same as creator)" },
+  { value: "user", label: "User", desc: "Website client (no staff access)" },
+];
+
+export function isCreator(user: User | null): boolean {
+  return !!user && (user.role === "creator" || user.email === ADMIN_EMAIL);
+}
+export function isITCEO(user: User | null): boolean {
+  return !!user && (user.role === "it_ceo" || isCreator(user));
+}
+export function isBDCEO(user: User | null): boolean {
+  return !!user && (user.role === "bd_ceo" || isCreator(user));
+}
+export function isHR(user: User | null): boolean {
+  return !!user && (user.role === "hr" || isCreator(user));
+}
+export function isStaffMember(user: User | null): boolean {
+  if (!user) return false;
+  return ["creator","it_ceo","bd_ceo","hr","it_staff","bd_staff","staff","admin"].includes(user.role);
+}
+export function canManageRole(actor: User | null, targetRole: StaffRole): boolean {
+  if (!actor) return false;
+  if (isCreator(actor)) return true;
+  if (actor.role === "it_ceo" && (targetRole === "it_staff" || targetRole === "staff")) return true;
+  if (actor.role === "bd_ceo" && (targetRole === "bd_staff" || targetRole === "staff")) return true;
+  if (actor.role === "hr" && targetRole === "staff") return false;
+  return false;
+}
+export function roleLabel(role: StaffRole): string {
+  return STAFF_ROLES.find(r=>r.value===role)?.label || role;
+}
+export function roleDepartment(role: StaffRole): Department {
+  if (role === "it_ceo" || role === "it_staff") return "IT";
+  if (role === "bd_ceo" || role === "bd_staff") return "BD";
+  if (role === "hr") return "HR";
+  return "ALL";
 }
 
 export function getSessionId(): string | null {
@@ -154,17 +210,20 @@ export function seedUsers(): User[] {
 
   const admin: User = {
     id: previousAdmin?.id ?? uid("u"),
-    name: previousAdmin?.name ?? "DEVZARD Admin",
+    name: previousAdmin?.name ?? "DEVZARD Creator",
     email: ADMIN_EMAIL,
     password:
       previousAdmin && credentialMigrated
         ? previousAdmin.password
         : obfuscate(ADMIN_DEFAULT_PASSWORD),
-    avatarColor: previousAdmin?.avatarColor ?? "from-violet-600 to-indigo-400",
+    avatarColor: previousAdmin?.avatarColor ?? "from-zinc-900 to-zinc-700",
     createdAt: previousAdmin?.createdAt ?? daysAgo(400),
     lastLogin: previousAdmin?.lastLogin ?? new Date().toISOString(),
     plan: "business",
-    role: "admin",
+    role: (previousAdmin?.role as UserRole) ?? "creator",
+    department: previousAdmin?.department ?? "ALL",
+    staffId: previousAdmin?.staffId ?? "DZ-001",
+    jobTitle: previousAdmin?.jobTitle ?? "Founder & CEO",
     company: "DEVZARD",
     country: previousAdmin?.country || "Pakistan",
     phone: "03174541414",
